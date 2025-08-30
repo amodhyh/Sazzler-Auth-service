@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serial;
 import java.util.Date;
 
 @Entity
@@ -37,6 +36,7 @@ public class User {
 
     @Column(name = "LAST_NAME")
     String lastName;
+
 
 }
 
