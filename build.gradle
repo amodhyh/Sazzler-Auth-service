@@ -36,8 +36,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 
-    implementation project(':api-definition:lib')
-    implementation project(':util:lib')
+    implementation project(':api-definition')
+    implementation project(':util')
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     compileOnly 'org.projectlombok:lombok'
