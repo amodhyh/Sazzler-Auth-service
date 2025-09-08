@@ -27,16 +27,17 @@ public class SecurityConfig {
         // 5. Logout configuration
         // 6. Exception handling
         // 7. Any custom filters
-        http
-                .csrf(customizer->customizer.disable())
 
+        http.csrf(customizer->customizer.disable())
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers("/register", "/login","/logout").permitAll()
                         .requestMatchers("/home", "/profile").authenticated()
                         .requestMatchers(("/admin/**")).hasRole("ADMIN")
 
 
-                );
+                )
+                .addFilterBefore()
+
 
 
 

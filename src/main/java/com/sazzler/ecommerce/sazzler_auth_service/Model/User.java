@@ -6,36 +6,47 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter @Setter
-@Table(name="PERSON")
+@Table(name="USER")
 public class User {
 
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @SequenceGenerator(name = "id_seq", sequenceName = "USER_ID_SEQ", allocationSize = 1)
     @Column(name = "USER_ID")
     int userId;
 
     @Column(name = "EMAIL", unique = true)
-    String email;
+    private String email;
 
     @Column(name = "DATE_OF_BIRTH")
-    Date dob;
+    private   Date dob;
 
     @Column(name = "CREATED_AT")
-    Date createdAt;
+    private Date createdAt;
 
     @Column(name = "PASSWORD")
-    String password;
+    private String password;
 
     @Id
     @Column(name = "USER_NAME", unique = true)
-    String username;
+    private String username;
 
     @Column(name = "FIRST_NAME")
-    String firstName;
+    private String firstName;
 
     @Column(name = "LAST_NAME")
-    String lastName;
+    private String lastName;
+
+    @Getter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ROLE_ID")
+    Role role;
+
+
 
 
 }
