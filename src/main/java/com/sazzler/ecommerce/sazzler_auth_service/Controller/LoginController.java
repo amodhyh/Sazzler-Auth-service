@@ -1,18 +1,29 @@
 package com.sazzler.ecommerce.sazzler_auth_service.Controller;
 
+import com.sazzler.ecommerce.sazzler_auth_service.DTO.UserLogReq;
+import com.sazzler.ecommerce.sazzler_auth_service.DTO.UserLogResponse;
+import com.sazzler.ecommerce.sazzler_auth_service.Services.LoginService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@AutoConfiguration
-    @RestController
-    public class LoginController {
 
-        @GetMapping("/login")
-        public String index() {
-            return "index";
-        }
+@RestController
+public class LoginController {
+
+LoginService loginService;
+@Autowired
+LoginController(LoginService loginService){
+    this.loginService=loginService;
+}
+
+    @PostMapping("/login")
+    public ResponseEntity<UserLogResponse> login(@BindParam UserLogReq userLogReq) {
+
+        return loginService.authenticate(userLogReq);
+    }
 
 //        @PostMapping("/login")
 //        public ResponseEntity<?> authenticate(UserLogReq userLogReq) {

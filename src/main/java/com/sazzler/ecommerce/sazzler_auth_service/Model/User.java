@@ -22,6 +22,7 @@ public class User {
     @Column(name = "EMAIL", unique = true)
     private String email;
 
+
     @Column(name = "DATE_OF_BIRTH")
     private   Date dob;
 

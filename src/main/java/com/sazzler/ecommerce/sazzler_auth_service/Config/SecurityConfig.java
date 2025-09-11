@@ -31,12 +31,10 @@ public class SecurityConfig {
         http.csrf(customizer->customizer.disable())
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers("/register", "/login","/logout").permitAll()
-                        .requestMatchers("/home", "/profile").authenticated()
-                        .requestMatchers(("/admin/**")).hasRole("ADMIN")
 
 
-                )
-                .addFilterBefore()
+                );
+
 
 
 

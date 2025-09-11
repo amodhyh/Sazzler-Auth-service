@@ -22,6 +22,7 @@ public class Role{
     @OneToMany(mappedBy = "roles")
     private Set<User> users=new HashSet<>();
 
+    @Getter
     @ManyToMany
     @JoinTable(
             name = "role_permissions",
