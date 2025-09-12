@@ -2,16 +2,22 @@ package com.sazzler.ecommerce.sazzler_auth_service.Model;
 
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.Constraint;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter @Setter
 @Table(name="USER")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -19,26 +25,38 @@ public class User {
     @Column(name = "USER_ID")
     int userId;
 
+    @Email(message = "Email should be valid")
+    @NotNull(message = "Email cannot be null")
+    @NotBlank(message = "Email cannot be blank")
     @Column(name = "EMAIL", unique = true)
     private String email;
 
-
+    @NotNull(message = "Date of Birth cannot be null")
     @Column(name = "DATE_OF_BIRTH")
     private   Date dob;
 
     @Column(name = "CREATED_AT")
-    private Date createdAt;
+    private LocalDate createdAt;
+
+    @NotNull(message = "Password cannot be null")
+    @NotBlank(message = "Password cannot be blank")
 
     @Column(name = "PASSWORD")
     private String password;
 
     @Id
+    @NotNull(message = "Username cannot be null")
+    @NotBlank(message = "Username cannot be blank")
     @Column(name = "USER_NAME", unique = true)
     private String username;
 
+    @NotNull(message = "First name cannot be null")
+    @NotBlank(message = "First name cannot be blank")
     @Column(name = "FIRST_NAME")
     private String firstName;
 
+    @NotNull(message = "Last name cannot be null")
+    @NotBlank(message = "Last name cannot be blank")
     @Column(name = "LAST_NAME")
     private String lastName;
 
