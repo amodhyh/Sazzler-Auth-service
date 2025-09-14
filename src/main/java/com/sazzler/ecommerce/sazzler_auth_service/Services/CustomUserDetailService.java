@@ -4,6 +4,7 @@ import com.sazzler.ecommerce.sazzler_auth_service.Model.Permission;
 import com.sazzler.ecommerce.sazzler_auth_service.Model.Role;
 import com.sazzler.ecommerce.sazzler_auth_service.Model.User;
 import com.sazzler.ecommerce.sazzler_auth_service.Repository.UserRepo;
+import com.sazzler.ecommerce.sazzler_auth_service.Security.SazzlerUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.Permissions;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,30 +23,46 @@ import java.util.stream.Collectors;
 @Service
 public class CustomUserDetailService implements UserDetailsService {
 
-
+    private Long id; // Your custom field
+    private String username;
+    private String password;
+    private Collection<? extends GrantedAuthority> authorities;
     private final UserRepo userRepo;
+
+    public CustomUserDetailService(UserRepo userRepo, Collection<? extends GrantedAuthority> authorities, String password, String username, Long id) {
+        this.userRepo = userRepo;
+        this.authorities = authorities;
+        this.password = password;
+        this.username = username;
+        this.id = id;
+    }
 
     public CustomUserDetailService(UserRepo userRepo) {
         this.userRepo = userRepo;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
+    public SazzlerUserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
         User user = id.contains("@") ? userRepo.findByEmail(id) : userRepo.findByUsername(id);
+
         if (user == null) {
-            throw new UsernameNotFoundException("No user found with id: " + id);
+            throw new UsernameNotFoundException("No user found with str_id: " + id);
         }
         Role role=user.getRole();
         Set<Permission> permissions=role.getPermissions();
 
+        //store the permissions in the set of granted authorities
         Set<GrantedAuthority> authorities = permissions.stream()
                 .map(permission -> new SimpleGrantedAuthority(permission.getPermissionName())).collect(Collectors.toSet());
 
+        //store the role in the set of granted authorities
         SimpleGrantedAuthority roleAuth = new SimpleGrantedAuthority("ROLE_" + user.getRole().getName());
         authorities.add(roleAuth);
-
-        return new org.springframework.security.core.userdetails.User(
+        //authorities = {"ROLE_ADMIN","PERM_READ","PERM_WRITE"}
+        return new SazzlerUserDetails(
+                user.getUserId(),
                 user.getUsername(),
+                user.getEmail(),
                 user.getPassword(),
                 authorities
         );

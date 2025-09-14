@@ -22,8 +22,8 @@ public class User {
 
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @SequenceGenerator(name = "id_seq", sequenceName = "USER_ID_SEQ", allocationSize = 1)
-    @Column(name = "USER_ID")
-    int userId;
+    @Column(name = "USER_ID", unique = true)
+    private Long userId;
 
     @Email(message = "Email should be valid")
     @NotNull(message = "Email cannot be null")
