@@ -6,6 +6,7 @@ import com.sazzler.ecommerce.api_def.auth_service.DTO.UserLogResponse;
 import com.sazzler.ecommerce.sazzler_auth_service.Security.SazzlerUserDetails;
 import com.sazzler.ecommerce.util.JWTutil.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,43 +17,45 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
 public class LoginService {
 
-    AuthenticationManager authenticationManager;
-    CustomUserDetailService userDetailService;
+    private final AuthenticationManager authenticationManager;
+    private final JWTUtil jwtUtil;
 
     @Autowired
-    LoginService(CustomUserDetailService userDetailService,AuthenticationManager authenticationManager) {
-        this.userDetailService = userDetailService;
+    public LoginService( AuthenticationManager authenticationManager, @Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long expiration) {
         this.authenticationManager = authenticationManager;
+        this.jwtUtil = new JWTUtil(secret, expiration);
     }
 
     public ResponseEntity<UserLogResponse> authenticate(UserLogReq userLogReq) {
 
-        SazzlerUserDetails userDetails=userDetailService.loadUserByUsername(userLogReq.str_id());
-        Set< GrantedAuthority> role= new HashSet<>(userDetails.getAuthorities());
-        JWTUtil jwtUtil=new JWTUtil("{$jwt.secret}", 600000L);
-
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken= new UsernamePasswordAuthenticationToken(
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                 userLogReq.str_id(),
                 userLogReq.password()
         );
-        // Load user details to check if user exists
-        Authentication authentication=authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-        if(authentication.isAuthenticated()){
-            String token= jwtUtil.generateToken(userDetails.getId(),
+
+        Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+
+        if (authentication.isAuthenticated()) {
+            SazzlerUserDetails userDetails = (SazzlerUserDetails) authentication.getPrincipal();
+            Set<String> authorities = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toSet());
+
+            String token = jwtUtil.generateToken(
+                    userDetails.getId(),
                     userDetails.getUsername(),
                     userDetails.getEmail(),
-                    userDetails.getAuthorities()
-                    );
-            return ResponseEntity.ok(new UserLogResponse("Login Successful!",token));
+                    authorities
+            );
+            return ResponseEntity.ok(new UserLogResponse("Login Successful!", token));
         }
 
-        return ResponseEntity.status(401).body(new UserLogResponse("Authentication Failed!",null));
-
-
+        return ResponseEntity.status(401).body(new UserLogResponse("Authentication Failed!", null));
     }
 }

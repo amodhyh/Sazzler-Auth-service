@@ -8,41 +8,28 @@ import com.sazzler.ecommerce.sazzler_auth_service.Security.SazzlerUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.security.Permissions;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-//
 @Service
 public class CustomUserDetailService implements UserDetailsService {
 
-    private Long id; // Your custom field
-    private String username;
-    private String password;
-    private Collection<? extends GrantedAuthority> authorities;
     private final UserRepo userRepo;
 
-    public CustomUserDetailService(UserRepo userRepo, Collection<? extends GrantedAuthority> authorities, String password, String username, Long id) {
-        this.userRepo = userRepo;
-        this.authorities = authorities;
-        this.password = password;
-        this.username = username;
-        this.id = id;
-    }
-
+    @Autowired
     public CustomUserDetailService(UserRepo userRepo) {
         this.userRepo = userRepo;
     }
 
     @Override
     public SazzlerUserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
+        //id can be either email or username
+        //check if the id contains '@' to determine if it's an email
         User user = id.contains("@") ? userRepo.findByEmail(id) : userRepo.findByUsername(id);
 
         if (user == null) {
@@ -72,7 +59,3 @@ public class CustomUserDetailService implements UserDetailsService {
 
 
 }
-
-
-
-
