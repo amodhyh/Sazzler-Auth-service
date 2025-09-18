@@ -8,18 +8,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name="ROLE")
+@Table(name="roles")
 public class Role{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
+    @Column(name="ROLE_ID")
     private Long id;
 
     @Getter @Setter
+    @Column(name="ROLE_NAME", unique = true, nullable = false)
     private String name;
 
     @Getter
-    @OneToMany(mappedBy = "roles")
+    @OneToMany(mappedBy = "role")
     private Set<User> users=new HashSet<>();
 
     @Getter

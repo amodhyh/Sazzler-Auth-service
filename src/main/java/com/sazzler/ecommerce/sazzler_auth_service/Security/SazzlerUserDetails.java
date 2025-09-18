@@ -24,5 +24,20 @@ public class SazzlerUserDetails implements UserDetails {
         this.authorities = authorities;
     }
 
+    // Implement UserDetails methods
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
 }
 

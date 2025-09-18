@@ -18,10 +18,10 @@ LoginController(LoginService loginService){
     this.loginService=loginService;
 }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<UserLogResponse> login(@RequestBody UserLogReq userLogReq) {
 
-        return loginService.authenticate(new UserLogResponse("Login Successful","kk"));
+        return loginService.authenticate(userLogReq);
     }
 
 //        @PostMapping("/login")

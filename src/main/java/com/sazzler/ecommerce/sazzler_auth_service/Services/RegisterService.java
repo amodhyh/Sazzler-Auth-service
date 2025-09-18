@@ -23,7 +23,7 @@ public class RegisterService {
     private final RoleRepo roleRepo;
 
     @Autowired
-    public RegisterService(CustomUserDetailService customUserDetailService, UserRepo userRepo, RoleRepo roleRepo, DelegatingPasswordEncoder passwordEncoder){
+    public RegisterService(UserRepo userRepo, RoleRepo roleRepo, DelegatingPasswordEncoder passwordEncoder){
         this.userRepo=userRepo;
         this.roleRepo=roleRepo;
         this.passwordEncoder = passwordEncoder;
@@ -40,16 +40,25 @@ public class RegisterService {
         }
 
         String password=passwordEncoder.encode( userRegReq.password());
-
-        Role role=roleRepo.findByName("ROLE_USER");
+        Role role=null;
+        if(userRegReq.role().equals("ROLE_ADMIN")){
+            role=roleRepo.findByName("ROLE_ADMIN");
+        }
+        else{
+            role=roleRepo.findByName("ROLE_USER");
+        }
 
         userRepo.saveAndFlush(User.builder()
                 .username(userRegReq.username())
                 .email(userRegReq.email())
+                .firstName(userRegReq.firstName())
+                .lastName(userRegReq.lastName())
+                .dob(userRegReq.dob())
                 .role(role)
                 .createdAt(LocalDate.now())
                 .password(password)
                 .build());
+
         return  ResponseEntity.status(200).body("User registered successfully");
 
 

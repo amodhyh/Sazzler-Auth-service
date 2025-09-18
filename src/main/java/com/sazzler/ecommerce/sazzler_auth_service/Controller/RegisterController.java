@@ -30,7 +30,7 @@ public class RegisterController {
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
 //controllers
-    @PostMapping( value = "/Register")
+    @PostMapping( value = "/auth/register")
     public ResponseEntity<String> registerReq(@Valid @RequestBody UserRegReq regReq) {
 
         return registerService.register(regReq);}
