@@ -2,8 +2,6 @@ package com.sazzler.ecommerce.sazzler_auth_service.Model;
 
 
 import jakarta.persistence.*;
-import jakarta.validation.Constraint;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +9,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Getter @Setter

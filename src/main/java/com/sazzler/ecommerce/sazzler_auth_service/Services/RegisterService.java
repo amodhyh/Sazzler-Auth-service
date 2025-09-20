@@ -1,6 +1,7 @@
 package com.sazzler.ecommerce.sazzler_auth_service.Services;
 
 import com.sazzler.ecommerce.api_def.auth_service.DTO.UserRegReq;
+import com.sazzler.ecommerce.api_def.auth_service.Exceptions.EmptyRegistrationDetails;
 import com.sazzler.ecommerce.api_def.auth_service.Exceptions.UserAlreadyExists;
 import com.sazzler.ecommerce.api_def.auth_service.Exceptions.UserTooYound;
 import com.sazzler.ecommerce.sazzler_auth_service.Model.Role;
@@ -9,7 +10,6 @@ import com.sazzler.ecommerce.sazzler_auth_service.Repository.RoleRepo;
 import com.sazzler.ecommerce.sazzler_auth_service.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +30,16 @@ public class RegisterService {
     }
 
     public ResponseEntity<String> register(UserRegReq userRegReq) {
+
+        if (userRegReq == null ||
+            userRegReq.username() == null || userRegReq.username().isBlank() ||
+            userRegReq.email() == null || userRegReq.email().isBlank() ||
+            userRegReq.password() == null || userRegReq.password().isBlank() ||
+            userRegReq.firstName() == null || userRegReq.firstName().isBlank() ||
+            userRegReq.lastName() == null || userRegReq.lastName().isBlank() ||
+            userRegReq.dob() == null) {
+            throw new EmptyRegistrationDetails("Registration request contains invalid data. All fields are required.");
+        }
 
         if(userRepo.existsByUsernameandEmail(userRegReq.email(), userRegReq.username())) {
               throw new UserAlreadyExists("User already exists");
