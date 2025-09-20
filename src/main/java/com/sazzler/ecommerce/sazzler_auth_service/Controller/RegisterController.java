@@ -1,7 +1,6 @@
 package com.sazzler.ecommerce.sazzler_auth_service.Controller;
 
 import com.sazzler.ecommerce.api_def.auth_service.DTO.UserRegReq;
-import com.sazzler.ecommerce.api_def.auth_service.DTO.UserRegResponse;
 import com.sazzler.ecommerce.sazzler_auth_service.Services.RegisterService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
