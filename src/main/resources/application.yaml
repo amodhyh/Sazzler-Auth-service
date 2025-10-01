@@ -33,3 +33,16 @@ logging:
     org:
         springframework:
             security: DEBUG
+
+#prometheus
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - prometheus
+  endpoint:
+    prometheus:
+      enabled: true
