@@ -1,6 +1,9 @@
 package com.sazzler.ecommerce.sazzler_auth_service.Config;
 
 //import com.sazzler.ecommerce.sazzler_auth_service.Services.CustomUserDetailService;
+import com.sazzler.ecommerce.sazzler_auth_service.Security.OAuthSuccessHandler;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +21,13 @@ import java.util.Map;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final OAuthSuccessHandler oAuthSuccessHandler;
+
+    @Autowired
+    public SecurityConfig(OAuthSuccessHandler oAuthSuccessHandler) {
+        this.oAuthSuccessHandler = oAuthSuccessHandler;
+    }
+
     //which url paths should be secured, and which should not
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -31,8 +41,16 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // Changed from /api/auth/**
+                        // /auth/** – application login/register endpoints
+                        // /oauth2/** – Spring Security OAuth2 authorization initiation (e.g. /oauth2/authorization/google)
+                        // /login/oauth2/** – Spring Security OAuth2 callback from provider (e.g. /login/oauth2/code/google)
+                        .requestMatchers("/auth/**", "/oauth2/**", "/login/oauth2/**").permitAll()
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuthSuccessHandler)
+                        .failureHandler((request, response, exception) ->
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage()))
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
