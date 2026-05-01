@@ -1,13 +1,9 @@
 package com.sazzler.ecommerce.sazzler_auth_service.ExceptionHandling;
 
 
-import com.sazzler.ecommerce.api_def.auth_service.Exceptions.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.io.IOException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends RuntimeException {
