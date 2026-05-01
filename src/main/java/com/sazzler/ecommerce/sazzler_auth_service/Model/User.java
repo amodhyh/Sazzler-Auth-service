@@ -31,9 +31,8 @@ public class User {
     @Column(name = "email", unique = true)
     private String email;
 
-    @NotNull(message = "Date of Birth cannot be null")
     @Column(name = "date_of_birth")
-    private   LocalDate dob;
+    private LocalDate dob;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -41,8 +40,6 @@ public class User {
 
 
 
-    @NotNull(message = "Password cannot be null")
-    @NotBlank(message = "Password cannot be blank")
     @Column(name = "password" , columnDefinition = "TEXT")
     private String password;
 
@@ -66,4 +63,10 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     Role role;
+
+    @Column(name = "provider")
+    private String provider;
+
+    @Column(name = "provider_id")
+    private String providerId;
 }
