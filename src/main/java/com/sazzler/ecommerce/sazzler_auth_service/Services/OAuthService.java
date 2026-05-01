@@ -74,7 +74,6 @@ public class OAuthService {
                 .lastName(lastName != null ? lastName : "")
                 .provider(provider)
                 .providerId(providerId)
-                .createdAt(LocalDate.now())
                 .role(role)
                 .build();
 
