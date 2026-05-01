@@ -88,7 +88,7 @@ public class OAuthService {
         String candidate = base;
         // Append a short random suffix until the username is unique
         while (userRepo.findByUsername(candidate) != null) {
-            candidate = base + "_" + UUID.randomUUID().toString().substring(0, 6);
+            candidate = base + "_" + UUID.randomUUID().toString().substring(0, 8);
         }
         return candidate;
     }

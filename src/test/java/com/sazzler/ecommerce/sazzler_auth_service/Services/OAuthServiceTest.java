@@ -143,6 +143,8 @@ public class OAuthServiceTest {
         assertNotNull(details);
         // username must start with "dave" but not be plain "dave"
         assertTrue(details.getUsername().startsWith("dave_"), "Expected suffix, got: " + details.getUsername());
+        // verify the retry loop actually called findByUsername twice
+        verify(userRepo, times(2)).findByUsername(anyString());
     }
 
     // --- helpers ---
