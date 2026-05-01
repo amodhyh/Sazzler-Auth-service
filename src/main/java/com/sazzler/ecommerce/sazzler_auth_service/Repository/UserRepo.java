@@ -13,6 +13,5 @@ public interface UserRepo extends JpaRepository<User,Integer> {
     @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM User u WHERE u.username = ?1 OR u.email = ?2")
     boolean existsByUsernameandEmail(String username,String email);
 
-    @Query("SELECT u FROM User u WHERE u.provider = ?1 AND u.providerId = ?2")
-    <Optional> User findByProviderAndProviderId(String provider, String providerId);
+    Optional<User> findByProviderAndProviderId(String provider, String providerId);
 }
