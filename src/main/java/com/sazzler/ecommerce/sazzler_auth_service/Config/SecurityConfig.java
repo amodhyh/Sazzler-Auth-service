@@ -1,6 +1,9 @@
 package com.sazzler.ecommerce.sazzler_auth_service.Config;
 
 //import com.sazzler.ecommerce.sazzler_auth_service.Services.CustomUserDetailService;
+import com.sazzler.ecommerce.sazzler_auth_service.Security.OAuthSuccessHandler;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +20,13 @@ import java.util.Map;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final OAuthSuccessHandler oAuthSuccessHandler;
+
+    @Autowired
+    public SecurityConfig(OAuthSuccessHandler oAuthSuccessHandler) {
+        this.oAuthSuccessHandler = oAuthSuccessHandler;
+    }
 
     //which url paths should be secured, and which should not
     @Bean
@@ -35,6 +45,11 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").permitAll()
 
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuthSuccessHandler)
+                        .failureHandler((request, response, exception) ->
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage()))
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
