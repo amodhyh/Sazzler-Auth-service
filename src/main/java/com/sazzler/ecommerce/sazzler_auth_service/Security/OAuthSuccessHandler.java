@@ -86,6 +86,6 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
                 authorities
         );
 
-        response.sendRedirect(redirectUri + "?token=" + token);
+        response.sendRedirect(redirectUri + "#token=" + token);
     }
 }
