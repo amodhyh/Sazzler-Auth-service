@@ -57,7 +57,7 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
             String fullName = oAuth2User.getAttribute("name");
             if (fullName != null && fullName.contains(" ")) {
                 firstName = fullName.substring(0, fullName.indexOf(' '));
-                lastName = fullName.substring(fullName.indexOf(' ') + 1);
+                lastName = fullName.substring(fullName.lastIndexOf(' ') + 1);
             } else {
                 firstName = fullName != null ? fullName : "";
                 lastName = "";

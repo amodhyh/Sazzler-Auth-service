@@ -76,7 +76,7 @@ public class OAuthServiceTest {
         assertEquals("alice@example.com", details.getEmail());
         assertEquals("alice", details.getUsername());
         assertTrue(details.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ROLE_USER")));
+                .anyMatch(a -> a.getAuthority().equals("ROLE_USER")));
         verify(userRepo).saveAndFlush(any(User.class));
     }
 

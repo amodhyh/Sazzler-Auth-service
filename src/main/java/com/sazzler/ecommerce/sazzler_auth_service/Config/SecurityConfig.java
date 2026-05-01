@@ -41,6 +41,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // /auth/** – application login/register endpoints
+                        // /oauth2/** – Spring Security OAuth2 authorization initiation (e.g. /oauth2/authorization/google)
+                        // /login/oauth2/** – Spring Security OAuth2 callback from provider (e.g. /login/oauth2/code/google)
                         .requestMatchers("/auth/**", "/oauth2/**", "/login/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )

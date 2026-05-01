@@ -99,7 +99,8 @@ public class OAuthService {
                 .map(Permission::getPermissionName)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+        // Role name is already stored with the "ROLE_" prefix (e.g. "ROLE_USER")
+        authorities.add(new SimpleGrantedAuthority(role.getName()));
 
         return new SazzlerUserDetails(
                 user.getUserId(),
