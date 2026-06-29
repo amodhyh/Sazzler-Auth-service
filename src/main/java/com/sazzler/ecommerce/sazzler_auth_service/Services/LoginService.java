@@ -1,10 +1,10 @@
 package com.sazzler.ecommerce.sazzler_auth_service.Services;
 
 
-import com.sazzler.ecommerce.api_def.auth_service.DTO.UserLogReq;
-import com.sazzler.ecommerce.api_def.auth_service.DTO.UserLogResponse;
-import com.sazzler.ecommerce.api_def.auth_service.Exceptions.EmptyLoginCredentials;
-import com.sazzler.ecommerce.api_def.auth_service.Exceptions.InvalidCredentials;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.DTO.UserLogReq;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.DTO.UserLogResponse;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.EmptyLoginCredentials;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.InvalidCredentials;
 import com.sazzler.ecommerce.sazzler_auth_service.Security.SazzlerUserDetails;
 import com.sazzler.ecommerce.util.JWTutil.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;

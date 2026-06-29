@@ -1,6 +1,12 @@
 package com.sazzler.ecommerce.sazzler_auth_service.ExceptionHandling;
 
 
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.UserTooYound;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.EmptyLoginCredentials;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.EmptyRegistrationDetails;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.InvalidCredentials;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.UserAlreadyExists;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.UserNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

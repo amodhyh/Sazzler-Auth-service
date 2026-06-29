@@ -3,9 +3,9 @@ spring:
   application:
     name: sazzler-auth-service
   datasource:
-    url: jdbc:postgresql://localhost:5433/sazzler_postgress_db
-    username: amodhyh
-    password: 1234
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -35,7 +35,7 @@ spring:
 server:
   port: 8082
 jwt:
-  secret: 27f9bcfc4523599275abbb317f7117e8e864e7f31c2198c45df93f6c2d1a9ce7
+  secret: ${JWT_SECRET}
   expiration: 3600000 # (1 hour)
 
 # URI the OAuth success handler redirects to with ?token=<jwt>
@@ -47,7 +47,7 @@ eureka:
     prefer-ip-address: true #register with IP address with the eureka server
   client:
     service-url:
-        defaultZone: http://amodhyh:1234@localhost:8761/eureka/
+        defaultZone: http://${EUREKA_USERNAME}:${EUREKA_PASSWORD}@localhost:8761/eureka/
 logging:
   level:
     org:

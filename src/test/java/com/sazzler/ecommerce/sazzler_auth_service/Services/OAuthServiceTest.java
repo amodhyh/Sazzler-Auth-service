@@ -10,13 +10,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class OAuthServiceTest {
@@ -55,9 +56,8 @@ public class OAuthServiceTest {
 
     @Test
     public void processOAuthUser_newUser_createsAndReturnsDetails() {
-        when(userRepo.findByEmail("alice@example.com")).thenReturn(null);
-        when(userRepo.findByProviderAndProviderId("GOOGLE", "g123")).thenReturn(null);
-        when(userRepo.findByUsername("alice")).thenReturn(null);
+        when(userRepo.findByEmail("alice@example.com")).thenReturn(Optional.empty());
+        when(userRepo.findByProviderAndProviderId("GOOGLE", "g123")).thenReturn(Optional.empty());
         when(roleRepo.findByName("ROLE_USER")).thenReturn(defaultRole);
         when(userRepo.saveAndFlush(any(User.class))).thenAnswer(inv -> {
             User u = inv.getArgument(0);
@@ -74,7 +74,10 @@ public class OAuthServiceTest {
 
         assertNotNull(details);
         assertEquals("alice@example.com", details.getEmail());
-        assertEquals("alice", details.getUsername());
+        // Username should be "alice" + "_" + 8-char hash
+        assertTrue(details.getUsername().startsWith("alice_"), "Username should start with 'alice_': " + details.getUsername());
+        assertEquals(14, details.getUsername().length(), "Username should have length 14 (alice_ + 8 chars)");
+        
         assertTrue(details.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_USER")));
         verify(userRepo).saveAndFlush(any(User.class));
@@ -83,7 +86,7 @@ public class OAuthServiceTest {
     @Test
     public void processOAuthUser_existingUserByEmail_doesNotCreate() {
         User existingUser = buildUser(42L, "alice", "alice@example.com", "GOOGLE", "g123");
-        when(userRepo.findByEmail("alice@example.com")).thenReturn(existingUser);
+        when(userRepo.findByEmail("alice@example.com")).thenReturn(Optional.of(existingUser));
 
         SazzlerUserDetails details = oAuthService.processOAuthUser("GOOGLE", "g123", "alice@example.com", "Alice", "Smith");
 
@@ -95,8 +98,8 @@ public class OAuthServiceTest {
     @Test
     public void processOAuthUser_existingUserByProvider_doesNotCreate() {
         User existingUser = buildUser(7L, "bob", "bob@example.com", "GITHUB", "gh99");
-        when(userRepo.findByEmail("bob@example.com")).thenReturn(null);
-        when(userRepo.findByProviderAndProviderId("GITHUB", "gh99")).thenReturn(existingUser);
+        when(userRepo.findByEmail("bob@example.com")).thenReturn(Optional.empty());
+        when(userRepo.findByProviderAndProviderId("GITHUB", "gh99")).thenReturn(Optional.of(existingUser));
 
         SazzlerUserDetails details = oAuthService.processOAuthUser("GITHUB", "gh99", "bob@example.com", "Bob", "Jones");
 
@@ -109,7 +112,7 @@ public class OAuthServiceTest {
     public void processOAuthUser_localUserLinkedToOAuth_savesProviderInfo() {
         // A user that exists by email but has no provider yet (local account)
         User localUser = buildUser(5L, "carol", "carol@example.com", null, null);
-        when(userRepo.findByEmail("carol@example.com")).thenReturn(localUser);
+        when(userRepo.findByEmail("carol@example.com")).thenReturn(Optional.of(localUser));
         when(userRepo.saveAndFlush(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
 
         oAuthService.processOAuthUser("GOOGLE", "g456", "carol@example.com", "Carol", "White");
@@ -120,31 +123,31 @@ public class OAuthServiceTest {
     }
 
     @Test
-    public void processOAuthUser_usernameConflict_appendsSuffix() {
-        when(userRepo.findByEmail("dave@example.com")).thenReturn(null);
-        when(userRepo.findByProviderAndProviderId(anyString(), anyString())).thenReturn(null);
-        // First call returns existing user (conflict), second call returns null (available)
-        when(userRepo.findByUsername("dave"))
-                .thenReturn(buildUser(99L, "dave", "other@example.com", "LOCAL", null))
-                .thenReturn(null);
+    public void processOAuthUser_dataIntegrityViolation_retriesWithNewUsername() {
+        when(userRepo.findByEmail("conflict@example.com")).thenReturn(Optional.empty());
+        when(userRepo.findByProviderAndProviderId(anyString(), anyString())).thenReturn(Optional.empty());
         when(roleRepo.findByName("ROLE_USER")).thenReturn(defaultRole);
-        when(userRepo.saveAndFlush(any(User.class))).thenAnswer(inv -> {
-            User u = inv.getArgument(0);
-            try {
-                var f = User.class.getDeclaredField("userId");
-                f.setAccessible(true);
-                f.set(u, 2L);
-            } catch (Exception e) { throw new RuntimeException(e); }
-            return u;
-        });
 
-        SazzlerUserDetails details = oAuthService.processOAuthUser("GOOGLE", "g789", "dave@example.com", "Dave", "Brown");
+        // First save fails, second save succeeds
+        when(userRepo.saveAndFlush(any(User.class)))
+                .thenThrow(new DataIntegrityViolationException("Username conflict"))
+                .thenAnswer(inv -> {
+                    User u = inv.getArgument(0);
+                    try {
+                        var f = User.class.getDeclaredField("userId");
+                        f.setAccessible(true);
+                        f.set(u, 100L);
+                    } catch (Exception e) { throw new RuntimeException(e); }
+                    return u;
+                });
+
+        SazzlerUserDetails details = oAuthService.processOAuthUser("GOOGLE", "g111", "conflict@example.com", "Conflict", "User");
 
         assertNotNull(details);
-        // username must start with "dave" but not be plain "dave"
-        assertTrue(details.getUsername().startsWith("dave_"), "Expected suffix, got: " + details.getUsername());
-        // verify the retry loop actually called findByUsername twice
-        verify(userRepo, times(2)).findByUsername(anyString());
+        assertEquals(100L, details.getId());
+        assertTrue(details.getUsername().startsWith("conflict_"));
+        // verify saveAndFlush was called twice
+        verify(userRepo, times(2)).saveAndFlush(any(User.class));
     }
 
     // --- helpers ---

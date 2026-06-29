@@ -1,9 +1,9 @@
 package com.sazzler.ecommerce.sazzler_auth_service.Services;
 
-import com.sazzler.ecommerce.api_def.auth_service.DTO.UserRegReq;
-import com.sazzler.ecommerce.api_def.auth_service.Exceptions.EmptyRegistrationDetails;
-import com.sazzler.ecommerce.api_def.auth_service.Exceptions.UserAlreadyExists;
-import com.sazzler.ecommerce.api_def.auth_service.Exceptions.UserTooYound;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.DTO.UserRegReq;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.EmptyRegistrationDetails;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.UserAlreadyExists;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.UserTooYound;
 import com.sazzler.ecommerce.sazzler_auth_service.Model.Role;
 import com.sazzler.ecommerce.sazzler_auth_service.Model.User;
 import com.sazzler.ecommerce.sazzler_auth_service.Repository.RoleRepo;

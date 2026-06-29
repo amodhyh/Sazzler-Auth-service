@@ -2,10 +2,10 @@ package com.sazzler.ecommerce.sazzler_auth_service.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.sazzler.ecommerce.api_def.auth_service.DTO.UserRegReq;
-import com.sazzler.ecommerce.api_def.auth_service.Exceptions.UserAlreadyExists;
-import com.sazzler.ecommerce.api_def.auth_service.Exceptions.UserTooYound;
-import com.sazzler.ecommerce.api_def.auth_service.Exceptions.EmptyRegistrationDetails;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.DTO.UserRegReq;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.UserAlreadyExists;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.UserTooYound;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.EmptyRegistrationDetails;
 import com.sazzler.ecommerce.sazzler_auth_service.Services.RegisterService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

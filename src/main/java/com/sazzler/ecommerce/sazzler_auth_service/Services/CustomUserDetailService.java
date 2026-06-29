@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,12 +29,11 @@ public class CustomUserDetailService implements UserDetailsService {
     @Override
     public SazzlerUserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
         //id can be either email or username
-        //check if the id contains '@' to determine if it's an email
-        User user = id.contains("@") ? userRepo.findByEmail(id) : userRepo.findByUsername(id);
+        //check if the id contains '@' to determine if it's an email or username
+        User user = id.contains("@") ? userRepo.findByEmail(id).orElseThrow(()->new UsernameNotFoundException("No user found with str_id: " + id)) :
+                userRepo.findByUsername(id).orElseThrow(()->new UsernameNotFoundException("No user found with str_id: " + id)) ;
 
-        if (user == null) {
-            throw new UsernameNotFoundException("No user found with str_id: " + id);
-        }
+
         Role role=user.getRole();
         Set<Permission> permissions=role.getPermissions();
 

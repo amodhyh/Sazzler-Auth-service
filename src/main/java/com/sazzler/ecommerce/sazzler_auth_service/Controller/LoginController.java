@@ -1,7 +1,7 @@
 package com.sazzler.ecommerce.sazzler_auth_service.Controller;
 
-import com.sazzler.ecommerce.api_def.auth_service.DTO.UserLogReq;
-import com.sazzler.ecommerce.api_def.auth_service.DTO.UserLogResponse;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.DTO.UserLogReq;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.DTO.UserLogResponse;
 import com.sazzler.ecommerce.sazzler_auth_service.Services.LoginService;
 
 import org.springframework.http.HttpStatus;

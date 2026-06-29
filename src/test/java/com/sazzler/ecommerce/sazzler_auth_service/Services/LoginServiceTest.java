@@ -1,8 +1,8 @@
 package com.sazzler.ecommerce.sazzler_auth_service.Services;
 
-import com.sazzler.ecommerce.api_def.auth_service.DTO.UserLogReq;
-import com.sazzler.ecommerce.api_def.auth_service.DTO.UserLogResponse;
-import com.sazzler.ecommerce.api_def.auth_service.Exceptions.InvalidCredentials;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.DTO.UserLogReq;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.DTO.UserLogResponse;
+import com.sazzler.ecommerce.sazzler_api_def.auth_service.Exceptions.InvalidCredentials;
 import com.sazzler.ecommerce.sazzler_auth_service.Security.SazzlerUserDetails;
 import com.sazzler.ecommerce.util.JWTutil.JWTUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +49,30 @@ public class LoginServiceTest {
         // Arrange
         //make controlled outputs from the depended on services
         UserLogReq userLogReq = new UserLogReq("testuser", "password123");
+        Set<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
+
+        SazzlerUserDetails userDetails = new SazzlerUserDetails(123L, "testuser", "test@email.com", "password123", authorities);
+        Authentication authentication = mock(Authentication.class);
+        String expectedToken = "mocked_jwt_token";
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(jwtUtil.generateToken(anyLong(), anyString(), anyString(), anySet())).thenReturn(expectedToken);
+        // Act
+        ResponseEntity<UserLogResponse> responseEntity = loginService.authenticate(userLogReq);
+
+        // Assert
+        assertEquals(200, responseEntity.getStatusCode().value());
+        assertNotNull(responseEntity.getBody());
+        assertEquals("Login Successful!", responseEntity.getBody().message());
+        assertEquals(expectedToken, responseEntity.getBody().token());
+    }
+
+    @Test
+    public void testAuthenticate_Success_WithEmail() {
+        // Arrange
+        UserLogReq userLogReq = new UserLogReq("test@email.com", "password123");
         Set<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
 
         SazzlerUserDetails userDetails = new SazzlerUserDetails(123L, "testuser", "test@email.com", "password123", authorities);
