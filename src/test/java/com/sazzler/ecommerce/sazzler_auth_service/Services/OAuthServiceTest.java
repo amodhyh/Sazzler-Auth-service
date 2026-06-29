@@ -74,10 +74,9 @@ public class OAuthServiceTest {
 
         assertNotNull(details);
         assertEquals("alice@example.com", details.getEmail());
-        // Username should be "alice" + "_" + 8-char hash
         assertTrue(details.getUsername().startsWith("alice_"), "Username should start with 'alice_': " + details.getUsername());
         assertEquals(14, details.getUsername().length(), "Username should have length 14 (alice_ + 8 chars)");
-        
+
         assertTrue(details.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_USER")));
         verify(userRepo).saveAndFlush(any(User.class));
@@ -125,10 +124,9 @@ public class OAuthServiceTest {
     @Test
     public void processOAuthUser_dataIntegrityViolation_retriesWithNewUsername() {
         when(userRepo.findByEmail("conflict@example.com")).thenReturn(Optional.empty());
-        when(userRepo.findByProviderAndProviderId(anyString(), anyString())).thenReturn(Optional.empty());
+        when(userRepo.findByProviderAndProviderId(any(), any())).thenReturn(Optional.empty());
         when(roleRepo.findByName("ROLE_USER")).thenReturn(defaultRole);
 
-        // First save fails, second save succeeds
         when(userRepo.saveAndFlush(any(User.class)))
                 .thenThrow(new DataIntegrityViolationException("Username conflict"))
                 .thenAnswer(inv -> {
@@ -146,7 +144,6 @@ public class OAuthServiceTest {
         assertNotNull(details);
         assertEquals(100L, details.getId());
         assertTrue(details.getUsername().startsWith("conflict_"));
-        // verify saveAndFlush was called twice
         verify(userRepo, times(2)).saveAndFlush(any(User.class));
     }
 
